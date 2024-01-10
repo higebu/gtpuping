@@ -14,7 +14,7 @@ var (
 	icmpSrcAddr = flag.String("icmp-src-addr", "", "source address for ICMP packet")
 	teid        = flag.Int("teid", 0, "teid")
 	qfi         = flag.Int("qfi", 0, "qfi")
-	pduType     = flag.String("pdu-type", "DL", "UL or DL") // DL: 0, UL: 1
+	pduType     = flag.String("pdu-type", "", "UL or DL. No extention header if not specified.") // DL: 0, UL: 1
 	interval    = flag.Duration("interval", 1*time.Second, "send interval for client")
 )
 

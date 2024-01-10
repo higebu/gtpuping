@@ -30,21 +30,26 @@ func CreatePacket(isa, ida net.IP, teid uint32, pduType string) ([]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-	pt := uint8(0x00)
-	if pduType == "UL" {
-		pt = uint8(0x10)
-	}
 	gtp := []byte{
-		0x34,       // Flags
+		0x38,       // Flags
 		0xff,       // Message Type: T-PDU (0xff)
 		0x00, 0x5c, // Length
 		0x00, 0x00, 0x00, 0x00, // TEID
-		0x00, 0x00, 0x00,
-		0x85, // Next extension header type: PDU Session container (0x85)
-		0x01, // Extension Header Length: 1
-		pt,   // PDU Type
-		0x09, // ..00 1001 = QoS Flow Identifier (QFI): 9
-		0x00, // Next extension header type: No more extension headers (0x00)
+	}
+	if pduType == "UL" || pduType == "DL" {
+		pt := uint8(0x00)
+		if pduType == "UL" {
+			pt = uint8(0x10)
+		}
+		gtp = append(gtp, []byte{
+			0x00, 0x00, 0x00,
+			0x85, // Next extension header type: PDU Session container (0x85)
+			0x01, // Extension Header Length: 1
+			pt,   // PDU Type
+			0x09, // ..00 1001 = QoS Flow Identifier (QFI): 9
+			0x00, // Next extension header type: No more extension headers (0x00)
+		}...)
+		gtp[0] = 0x34
 	}
 	binary.BigEndian.PutUint32(gtp[4:8], teid)
 	b := append(gtp, buf.Bytes()...)
